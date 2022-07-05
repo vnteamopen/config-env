@@ -8,7 +8,7 @@ The tool parse input file, loads variable environment to pattern `{{env "variabl
 
 ## Features
 
- - Load input file and replace `{{env "variable_env"}}` with value of variable environemtn `variable_env`
+ - Load input file and replace `{{env "variable_env"}}` with value of variable environment `variable_env`
 
 ## Installation
 
@@ -60,13 +60,41 @@ HOST_NAME=localhost PORT=1234 config-env config.yml output.yml
 docker run --rm -it -v $(pwd):/files/ -w /files -e HOST_NAME=localhost -e PORT=1234  ghcr.io/vnteamopen/config-env:main /app/config-env ./config.yml ./output.yml
 ```
 
-4. output.yml will be write with content
+3. output.yml will be write with content
 
 ```yml
 name: thuc
 host: localhost
 port: 1234
 path: /hello
+```
+
+## Features
+
+1. Overwrite template file with `-w` flag
+```bash
+config-env -w person.yml
+```
+
+2. Provide both flag `-w` and `output.yml` will overwrite template file and write output file
+```bash
+config-env -w person.yml output.yml
+```
+
+3. Provide multiple outputs
+```bash
+config-env person.yml output1.yml output2.yml
+```
+
+4. Support output to stdout
+```bash
+config-env -out-screen person.yml
+```
+
+5. Custom template's pattern
+```bash
+# change default pattern `{{env "path"}}` to `%%env "path"%%`
+config-env -c %%,%% person.yml output.yml
 ```
 
 ## Future
