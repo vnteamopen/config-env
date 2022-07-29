@@ -116,13 +116,7 @@ func (p *sequenceParser) isMatchedDefaultValue(input byte) bool {
 }
 
 func (p *sequenceParser) isMatchedEnd(input byte) bool {
-	incorrectDefaultValue := p.beginDefaultValue[0:p.beginDefaultValueIndex] + p.defaultValue
-	lenMatching := getMin(len(incorrectDefaultValue), len(p.end))
-	if lenMatching > 0 && incorrectDefaultValue[0:lenMatching] == p.end[0:lenMatching] {
-		p.beginDefaultValueIndex = 0
-		p.defaultValue = ""
-		p.endIndex = lenMatching
-	}
+	p.checkIncorrectDefaultValuePart()
 
 	if !p.isEndBegin() || len(p.envName) == 0 || p.isEndEnd() {
 		return false
@@ -173,6 +167,16 @@ func (p *sequenceParser) getEnvValue() []byte {
 		value = []byte(p.defaultValue)
 	}
 	return value
+}
+
+func (p *sequenceParser) checkIncorrectDefaultValuePart() {
+	incorrectDefaultValue := p.beginDefaultValue[:p.beginDefaultValueIndex] + p.defaultValue
+	lenMatching := getMin(len(incorrectDefaultValue), len(p.end))
+	if lenMatching > 0 && incorrectDefaultValue[:lenMatching] == p.end[:lenMatching] {
+		p.beginDefaultValueIndex = 0
+		p.defaultValue = ""
+		p.endIndex = lenMatching
+	}
 }
 
 func extractPattern(pattern []string) (string, string) {
