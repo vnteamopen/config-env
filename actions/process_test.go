@@ -12,6 +12,7 @@ import (
 func TestParse(t *testing.T) {
 	testKey := "TEST_USER"
 	testValue := "user"
+	defaultValue := "user_default"
 
 	os.Setenv(testKey, testValue)
 
@@ -125,6 +126,41 @@ func TestParse(t *testing.T) {
 			checkResult: func(envValue, received string) {
 				if envValue != received {
 					t.Errorf("Wrong parse: \nExpected: %s\nReceived: %s", envValue, received)
+				}
+			},
+			checkError: func(err error) {},
+		},
+		{
+			name:     "Matched simple pattern with default value",
+			template: fmt.Sprintf(`{{env "%s" "%s"}}`, "unknown", defaultValue),
+			envName:  testKey,
+			checkResult: func(envValue, received string) {
+				if defaultValue != received {
+					t.Errorf("Wrong parse: \nExpected: %s\nReceived: %s", defaultValue, received)
+				}
+			},
+			checkError: func(err error) {},
+		},
+		{
+			name:     "Invalid default value",
+			template: fmt.Sprintf(`{{env "%s" "%s}}`, "unknown", defaultValue),
+			envName:  testKey,
+			checkResult: func(envValue, received string) {
+				origin := fmt.Sprintf(`{{env "%s" "%s}}`, "unknown", defaultValue)
+				if origin != received {
+					t.Errorf("Wrong parse: \nExpected: %s\nReceived: %s", origin, received)
+				}
+			},
+			checkError: func(err error) {},
+		},
+		{
+			name:     "Default value contains pattern",
+			template: fmt.Sprintf(`{{env "%s" "}}%s"}}`, "unknown", defaultValue),
+			envName:  testKey,
+			checkResult: func(envValue, received string) {
+				origin := fmt.Sprintf(`}}%s`, defaultValue)
+				if origin != received {
+					t.Errorf("Wrong parse: \nExpected: %s\nReceived: %s", origin, received)
 				}
 			},
 			checkError: func(err error) {},

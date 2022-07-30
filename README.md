@@ -97,6 +97,14 @@ config-env -out-screen person.yml
 config-env -c %%,%% person.yml output.yml
 ```
 
+6. Use default value if cannot find env value
+```bash
+name: thuc
+host: {{env "HOST_NAME" "localhost"}}
+port: {{env "PORT" "8080"}}
+path: /hello
+```
+
 ## Future
 
 Check https://github.com/vnteamopen/config-env/issues
